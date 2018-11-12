@@ -56,8 +56,8 @@ public class MusicService extends MediaBrowserServiceCompat {
         mSession.setCallback(mCallback);
         mSession.setFlags(
                 MediaSessionCompat.FLAG_HANDLES_MEDIA_BUTTONS |
-                MediaSessionCompat.FLAG_HANDLES_QUEUE_COMMANDS |
-                MediaSessionCompat.FLAG_HANDLES_TRANSPORT_CONTROLS);
+                        MediaSessionCompat.FLAG_HANDLES_QUEUE_COMMANDS |
+                        MediaSessionCompat.FLAG_HANDLES_TRANSPORT_CONTROLS);
         setSessionToken(mSession.getSessionToken());
 
         mMediaNotificationManager = new MediaNotificationManager(this);
@@ -166,6 +166,13 @@ public class MusicService extends MediaBrowserServiceCompat {
         @Override
         public void onSkipToPrevious() {
             mQueueIndex = mQueueIndex > 0 ? mQueueIndex - 1 : mPlaylist.size() - 1;
+            mPreparedMedia = null;
+            onPlay();
+        }
+
+        @Override
+        public void onSkipToQueueItem(long id) {
+            mQueueIndex = (int) id;
             mPreparedMedia = null;
             onPlay();
         }
