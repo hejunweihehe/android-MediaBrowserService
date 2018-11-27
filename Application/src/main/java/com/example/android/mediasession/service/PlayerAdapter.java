@@ -25,13 +25,14 @@ import android.net.wifi.WifiManager;
 import android.support.annotation.NonNull;
 import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
+import android.util.Log;
 
 /**
  * Abstract player implementation that handles playing music with proper handling of headphones
  * and audio focus.
  */
 public abstract class PlayerAdapter {
-
+    private static final String TAG="PlayerAdapter";
     private static final float MEDIA_VOLUME_DEFAULT = 1.0f;
     private static final float MEDIA_VOLUME_DUCK = 0.2f;
 
@@ -146,6 +147,7 @@ public abstract class PlayerAdapter {
         public void onAudioFocusChange(int focusChange) {
             switch (focusChange) {
                 case AudioManager.AUDIOFOCUS_GAIN:
+                    Log.d(TAG,"AudioManager.AUDIOFOCUS_GAIN");
                     if (mPlayOnAudioFocus && !isPlaying()) {
                         play();
                     } else if (isPlaying()) {
@@ -154,15 +156,18 @@ public abstract class PlayerAdapter {
                     mPlayOnAudioFocus = false;
                     break;
                 case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK:
+                    Log.d(TAG,"AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK");
                     setVolume(MEDIA_VOLUME_DUCK);
                     break;
                 case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT:
+                    Log.d(TAG,"AudioManager.AUDIOFOCUS_LOSS_TRANSIENT");
                     if (isPlaying()) {
                         mPlayOnAudioFocus = true;
                         pause();
                     }
                     break;
                 case AudioManager.AUDIOFOCUS_LOSS:
+                    Log.d(TAG,"AudioManager.AUDIOFOCUS_LOSS");
                     mAudioManager.abandonAudioFocus(this);
                     mPlayOnAudioFocus = false;
                     stop();

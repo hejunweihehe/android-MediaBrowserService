@@ -126,7 +126,7 @@ public class MediaNotificationManager {
                                                          MediaSessionCompat.Token token,
                                                          boolean isPlaying,
                                                          MediaDescriptionCompat description) {
-
+        Log.d(TAG,"state.getActions() = "+state.getActions());
         // Create the (mandatory) notification channel when running on Android Oreo.
         if (isAndroidOOrHigher()) {
             createChannel();

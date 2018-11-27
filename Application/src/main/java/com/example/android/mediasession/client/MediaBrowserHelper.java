@@ -41,7 +41,7 @@ import java.util.List;
  */
 public class MediaBrowserHelper {
 
-    private static final String TAG = MediaBrowserHelper.class.getSimpleName();
+    private static final String TAG = "hjw_test";
 
     private final Context mContext;
     private final Class<? extends MediaBrowserServiceCompat> mMediaBrowserServiceClass;
@@ -219,6 +219,7 @@ public class MediaBrowserHelper {
         @Override
         public void onChildrenLoaded(@NonNull String parentId,
                                      @NonNull List<MediaBrowserCompat.MediaItem> children) {
+            Log.d(TAG, "onChildrenLoaded");
             MediaBrowserHelper.this.onChildrenLoaded(parentId, children);
         }
     }
@@ -229,6 +230,7 @@ public class MediaBrowserHelper {
 
         @Override
         public void onMetadataChanged(final MediaMetadataCompat metadata) {
+            Log.d(TAG, "onMetadataChanged");
             performOnAllCallbacks(new CallbackCommand() {
                 @Override
                 public void perform(@NonNull Callback callback) {
@@ -239,6 +241,7 @@ public class MediaBrowserHelper {
 
         @Override
         public void onPlaybackStateChanged(@Nullable final PlaybackStateCompat state) {
+            Log.d(TAG, "onPlaybackStateChanged");
             performOnAllCallbacks(new CallbackCommand() {
                 @Override
                 public void perform(@NonNull Callback callback) {
@@ -251,6 +254,7 @@ public class MediaBrowserHelper {
         // foreground and onStart() has been called (but not onStop()).
         @Override
         public void onSessionDestroyed() {
+            Log.d(TAG, "onSessionDestroyed");
             resetState();
             onPlaybackStateChanged(null);
 

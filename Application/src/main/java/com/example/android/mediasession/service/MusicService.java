@@ -25,6 +25,7 @@ import android.support.v4.media.MediaBrowserCompat;
 import android.support.v4.media.MediaBrowserServiceCompat;
 import android.support.v4.media.MediaDescriptionCompat;
 import android.support.v4.media.MediaMetadataCompat;
+import android.support.v4.media.RatingCompat;
 import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
 import android.util.Log;
@@ -38,7 +39,7 @@ import java.util.List;
 
 public class MusicService extends MediaBrowserServiceCompat {
 
-    private static final String TAG = MusicService.class.getSimpleName();
+    private static final String TAG = "MusicService";
 
     private MediaSessionCompat mSession;
     private PlayerAdapter mPlayback;
@@ -68,6 +69,7 @@ public class MusicService extends MediaBrowserServiceCompat {
 
     @Override
     public void onTaskRemoved(Intent rootIntent) {
+        Log.d(TAG, "onTaskRemoved");
         super.onTaskRemoved(rootIntent);
         stopSelf();
     }
@@ -84,6 +86,7 @@ public class MusicService extends MediaBrowserServiceCompat {
     public BrowserRoot onGetRoot(@NonNull String clientPackageName,
                                  int clientUid,
                                  Bundle rootHints) {
+        Log.d(TAG, "onGetRoot");
         return new BrowserRoot(MusicLibrary.getRoot(), null);
     }
 
@@ -91,6 +94,7 @@ public class MusicService extends MediaBrowserServiceCompat {
     public void onLoadChildren(
             @NonNull final String parentMediaId,
             @NonNull final Result<List<MediaBrowserCompat.MediaItem>> result) {
+        Log.d(TAG, "onLoadChildren");
         result.sendResult(MusicLibrary.getMediaItems());
     }
 
@@ -101,7 +105,14 @@ public class MusicService extends MediaBrowserServiceCompat {
         private MediaMetadataCompat mPreparedMedia;
 
         @Override
+        public boolean onMediaButtonEvent(Intent mediaButtonEvent) {
+            Log.d(TAG, "onMediaButtonEvent");
+            return super.onMediaButtonEvent(mediaButtonEvent);
+        }
+
+        @Override
         public void onAddQueueItem(MediaDescriptionCompat description) {
+            Log.d(TAG, "onAddQueueItem");
             mPlaylist.add(new MediaSessionCompat.QueueItem(description, description.hashCode()));
             mQueueIndex = (mQueueIndex == -1) ? 0 : mQueueIndex;
             mSession.setQueue(mPlaylist);
@@ -109,6 +120,7 @@ public class MusicService extends MediaBrowserServiceCompat {
 
         @Override
         public void onRemoveQueueItem(MediaDescriptionCompat description) {
+            Log.d(TAG, "onRemoveQueueItem");
             mPlaylist.remove(new MediaSessionCompat.QueueItem(description, description.hashCode()));
             mQueueIndex = (mPlaylist.isEmpty()) ? -1 : mQueueIndex;
             mSession.setQueue(mPlaylist);
@@ -116,6 +128,7 @@ public class MusicService extends MediaBrowserServiceCompat {
 
         @Override
         public void onPrepare() {
+            Log.d(TAG, "onPrepare");
             if (mQueueIndex < 0 && mPlaylist.isEmpty()) {
                 // Nothing to play.
                 return;
@@ -131,7 +144,14 @@ public class MusicService extends MediaBrowserServiceCompat {
         }
 
         @Override
+        public void onSetRating(RatingCompat rating) {
+            Log.d(TAG,"onSetRating rating = "+rating);
+            super.onSetRating(rating);
+        }
+
+        @Override
         public void onPlay() {
+            Log.d(TAG, "onPlay");
             if (!isReadyToPlay()) {
                 // Nothing to play.
                 return;
@@ -147,17 +167,20 @@ public class MusicService extends MediaBrowserServiceCompat {
 
         @Override
         public void onPause() {
+            Log.d(TAG, "onPause");
             mPlayback.pause();
         }
 
         @Override
         public void onStop() {
+            Log.d(TAG, "onStop");
             mPlayback.stop();
             mSession.setActive(false);
         }
 
         @Override
         public void onSkipToNext() {
+            Log.d(TAG, "onSkipToNext");
             mQueueIndex = (++mQueueIndex % mPlaylist.size());
             mPreparedMedia = null;
             onPlay();
@@ -165,6 +188,7 @@ public class MusicService extends MediaBrowserServiceCompat {
 
         @Override
         public void onSkipToPrevious() {
+            Log.d(TAG, "onSkipToPrevious");
             mQueueIndex = mQueueIndex > 0 ? mQueueIndex - 1 : mPlaylist.size() - 1;
             mPreparedMedia = null;
             onPlay();
@@ -172,6 +196,7 @@ public class MusicService extends MediaBrowserServiceCompat {
 
         @Override
         public void onSkipToQueueItem(long id) {
+            Log.d(TAG, "onSkipToQueueItem");
             mQueueIndex = (int) id;
             mPreparedMedia = null;
             onPlay();
@@ -179,6 +204,7 @@ public class MusicService extends MediaBrowserServiceCompat {
 
         @Override
         public void onSeekTo(long pos) {
+            Log.d(TAG, "onSeekTo");
             mPlayback.seekTo(pos);
         }
 
@@ -198,6 +224,7 @@ public class MusicService extends MediaBrowserServiceCompat {
 
         @Override
         public void onPlaybackStateChange(PlaybackStateCompat state) {
+            Log.d(TAG, "onPlaybackStateChange");
             // Report the state to the MediaSession.
             mSession.setPlaybackState(state);
 
